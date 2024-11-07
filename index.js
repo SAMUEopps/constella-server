@@ -9,7 +9,7 @@ const sessionMiddleware = require("./config/session");
 
 app.use(
     cors({
-        origin: "https://constella.onrender.com",
+        origin: process.env.CLIENT_ORIGIN || "https://constella.onrender.com",
         methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
