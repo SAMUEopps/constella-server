@@ -145,7 +145,7 @@ const signUp = asyncHandler(async (req, res, next) => {
             username,
             email,
             password,
-            profileImageURL
+            //profileImageURL
            // profileImageURL: `${process.env.API_URL}/uploads/default_pfp.png`,
         });
 
