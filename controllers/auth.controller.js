@@ -45,7 +45,7 @@ const checkIdentifier = asyncHandler(async (req, res, next) => {
 });
 
 
-const signUp = asyncHandler(async (req, res, next) => {
+/*const signUp = asyncHandler(async (req, res, next) => {
     // Step 1: Log the incoming request and its data
     console.log('Received sign-up request:', req.body);
 
@@ -129,11 +129,11 @@ const signUp = asyncHandler(async (req, res, next) => {
         console.error('Unexpected error during sign-up process:', err);
         return next(err);
     }
-});
+});*/
 
 
 
-/*const signUp = asyncHandler(async (req, res, next) => {
+const signUp = asyncHandler(async (req, res, next) => {
     const { displayName, username, email, password } = req.body;
 
     if (!displayName || !email || !password || !username)
@@ -180,7 +180,7 @@ const signUp = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-});*/
+});
 
 const verifyToken = asyncHandler(async (req, res, next) => {
     const { id, code: codeParam } = req.params;
