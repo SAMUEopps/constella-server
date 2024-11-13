@@ -46,6 +46,94 @@ const checkIdentifier = asyncHandler(async (req, res, next) => {
 
 
 const signUp = asyncHandler(async (req, res, next) => {
+    // Step 1: Log the incoming request and its data
+    console.log('Received sign-up request:', req.body);
+
+    const { displayName, username, email, password } = req.body;
+
+    // Step 2: Validate required fields and log if any are missing
+    if (!displayName || !email || !password || !username) {
+        console.error('Missing required fields:', {
+            displayName,
+            username,
+            email,
+            password
+        });
+        return next(new BadRequestError("Provide all of the required fields!"));
+    }
+
+    try {
+        // Step 3: Log before user creation
+        console.log('Attempting to create user with data:', {
+            displayName,
+            username,
+            email,
+        });
+
+        const user = await authService.createLocalUser({
+            displayName,
+            username,
+            email,
+            password,
+            profileImageURL: process.env.API_URL ? `${process.env.API_URL}/uploads/default_pfp.png` : 'default_pfp.png',
+        });
+
+        // Step 4: Log successful user creation
+        console.log('User created successfully:', {
+            id: user._id,
+            displayName: user.displayName,
+            username: user.username,
+        });
+
+        // Step 5: Log before sending confirmation email
+        console.log('Sending confirmation email to user with email:', user.email);
+        await authService.sendConfirmationEmail(user._id, user.email);
+
+        // Step 6: Send response back to the client
+        return res.status(200).json({
+            isAuthenticated: true,
+            id: user._id,
+        });
+
+    } catch (err) {
+        // Step 7: Log errors for debugging
+        console.error('Error during sign-up process:', err);
+
+        if (err.errors?.['username'] instanceof Error.ValidatorError) {
+            console.error('Username validation error:', err.errors['username']);
+            return next(new BadRequestError(err.errors['username']));
+        }
+
+        if (err.errors?.['displayName'] instanceof Error.ValidatorError) {
+            console.error('Display name validation error:', err.errors['displayName']);
+            return next(new BadRequestError(err.errors['displayName']));
+        }
+
+        if (err.errors?.['email'] instanceof Error.ValidatorError) {
+            console.error('Email validation error:', err.errors['email']);
+            return next(new BadRequestError(err.errors['email']));
+        }
+
+        if (err.errors?.['password'] instanceof Error.ValidatorError) {
+            console.error('Password validation error:', err.errors['password']);
+            return next(new BadRequestError(err.errors['password']));
+        }
+
+        // Step 8: Log conflict error if username or email already exists
+        if (err.code === 11000) {
+            console.error('Username or email conflict error:', err);
+            return next(new ConflictError("User with the provided username/email already exists!"));
+        }
+
+        // Final catch-all error log
+        console.error('Unexpected error during sign-up process:', err);
+        return next(err);
+    }
+});
+
+
+
+/*const signUp = asyncHandler(async (req, res, next) => {
     const { displayName, username, email, password } = req.body;
 
     if (!displayName || !email || !password || !username)
@@ -92,7 +180,7 @@ const signUp = asyncHandler(async (req, res, next) => {
         return next(err);
     }
 
-});
+});*/
 
 const verifyToken = asyncHandler(async (req, res, next) => {
     const { id, code: codeParam } = req.params;
