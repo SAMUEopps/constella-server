@@ -178,7 +178,7 @@ const isAuth = (req, res, next) => {
         }
         // Log the lack of user authentication
         console.log("Authentication failed: No user found in the request.");
-        return next(new UnauthenticatedError("You are not authenticated!"));
+        return next(new UnauthenticatedError("You are not authenticated!!!"));
     } catch (error) {
         // Log the exact error message and stack trace for detailed debugging
         console.error("Error in isAuth function:", error.message);
